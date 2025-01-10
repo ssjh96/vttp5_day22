@@ -64,4 +64,16 @@ public class RsvpService {
 
         return jab.build();
     }
+
+    public Boolean saveRsvp(Rsvp rsvp)
+    {
+        int rowsAffected = rsvpRepo.saveRsvp(rsvp);
+
+        if (rowsAffected > 0)
+        {
+            return true;
+        }
+    
+        return false;
+    }
 }

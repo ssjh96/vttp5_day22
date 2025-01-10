@@ -65,4 +65,12 @@ public class RsvpRepository {
         return matchingRsvps;
     }
 
+    public int saveRsvp(Rsvp rsvp)
+    {
+        int rowsAffected = template.update(Queries.Q_SAVE_RSVP, rsvp.getEmail(), rsvp.getPhone(), rsvp.getDate(), rsvp.getComments());
+
+        return rowsAffected;
+        
+    }
+
 }
