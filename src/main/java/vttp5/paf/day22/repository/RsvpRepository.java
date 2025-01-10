@@ -67,7 +67,7 @@ public class RsvpRepository {
 
     public int saveRsvp(Rsvp rsvp)
     {
-        int rowsAffected = template.update(Queries.Q_SAVE_RSVP, rsvp.getEmail(), rsvp.getPhone(), rsvp.getDate(), rsvp.getComments());
+        int rowsAffected = template.update(Queries.Q_SAVE_RSVP, rsvp.getEmail(), rsvp.getPhone(), rsvp.getConfirmationDate(), rsvp.getComments());
 
         return rowsAffected;
         

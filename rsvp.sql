@@ -13,7 +13,7 @@ select "Creating RSVP table..." as msg;
 create table rsvp_table (
     email varchar(256) not null, -- this is the PK
     phone varchar(256),
-    cfm_date date not null,
+    confirmation_date date not null,
     comments text,
 
     constraint email_pk primary key(email)

@@ -12,17 +12,17 @@ public class Rsvp
 
     // @Future
     // @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date date;
+    private Date confirmationDate;
 
     private String comments;
 
     public Rsvp() {
     }
 
-    public Rsvp(String email, String phone, Date date, String comments) {
+    public Rsvp(String email, String phone, Date confirmationDate, String comments) {
         this.email = email;
         this.phone = phone;
-        this.date = date;
+        this.confirmationDate = confirmationDate;
         this.comments = comments;
     }
 
@@ -42,19 +42,21 @@ public class Rsvp
         this.phone = phone;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public String getComments() {
         return comments;
     }
 
     public void setComments(String comments) {
         this.comments = comments;
-    }    
+    }
+
+    public Date getConfirmationDate() {
+        return confirmationDate;
+    }
+
+    public void setConfirmationDate(Date confirmationDate) {
+        this.confirmationDate = confirmationDate;
+    }
+
+    
 }

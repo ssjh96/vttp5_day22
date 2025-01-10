@@ -1,5 +1,6 @@
 package vttp5.paf.day22.controller;
 
+import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 import vttp5.paf.day22.model.Rsvp;
 import vttp5.paf.day22.service.RsvpService;
 import vttp5.paf.day22.util.Util;
@@ -165,6 +167,32 @@ public class RsvpRestController {
     // Clieant sends request > /api/rsvp > Header CT: a/j, A: a/j, Body: JSON obj w RSVP details
     // Server process request > parse JSON body, adds RSVP to DB, sends a response > Header: CT: a/j, Body: confirmation message
 
+    // @PostMapping(path = "/rsvp", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    // public ResponseEntity<String> addNewRsvp(@RequestBody String formEntry)
+    // {
+
+    //     JsonReader jsonReader = Json.createReader(new StringReader(formEntry));
+    //     JsonObject rsvpJson = jsonReader.readObject();
+
+    //     Rsvp rsvp = new Rsvp(rsvpJson.getString("email"), rsvpJson.getString("phone"), rsvpJson.getString(formEntry)
+
+    //     try {
+            
+    //         rsvpService.saveRsvp(rsvpJson);
+
+    //         return ResponseEntity.status(201).body(null);
+
+    //     } catch (Exception e){
+
+    //         System.out.println(e.getCause());
+    //         e.printStackTrace();
+
+    //         return ResponseEntity.status(500).body(null);
+    //     }
+        
+    // }
+
+    
     
     // Without MultiValueMap
     @PostMapping(path = "/rsvp", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

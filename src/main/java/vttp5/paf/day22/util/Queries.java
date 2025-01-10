@@ -22,13 +22,13 @@ public class Queries
     public static final String Q_SAVE_RSVP = 
         """
             insert into rsvp_table
-                (email, phone, cfm_date, comments)
+                (email, phone, confirmation_date, comments)
             values
                 (?, ?, ?, ?)
             as new_rsvp
             on duplicate key update
                 phone = new_rsvp.phone,
-                cfm_date = new_rsvp.cfm_date,
+                confirmation_date = new_rsvp.confirmation_date,
                 comments = new_rsvp.comments
         """;
 
