@@ -1,6 +1,7 @@
 package vttp5.paf.day22.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class RsvpService {
     }
 
 
-    
+
     public JsonArray getAllJsonArrayRsvp()
     {
         JsonArrayBuilder jab = Json.createArrayBuilder();
@@ -41,5 +42,26 @@ public class RsvpService {
 
         return jab.build();
     }
+
+    public Optional<Rsvp> getRsvpByEmail(String email)
+    {
+        Optional<Rsvp> optRsvp = rsvpRepo.getRsvpByEmail(email);
+
+        return optRsvp;
+    }
     
+    public JsonArray getMatchingJsonRsvpByEmail(String email)
+    {
+        JsonArrayBuilder jab = Json.createArrayBuilder();
+
+        List<Rsvp> matchingRsvps = rsvpRepo.getMatchingRsvpByEmail(email);
+
+        for (Rsvp rsvp : matchingRsvps)
+        {
+            JsonObject jRsvp = Util.toJsonRsvp(rsvp);
+            jab.add(jRsvp);
+        }
+
+        return jab.build();
+    }
 }

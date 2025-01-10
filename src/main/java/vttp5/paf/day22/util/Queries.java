@@ -8,4 +8,9 @@ public class Queries
             select * from rsvp_table
         """; // triple quotes for multiple lines?
     
+        public static final String Q_EMAIL_RSVP =    
+        """
+            select * from rsvp_table
+            where email like ?
+        """;
 }

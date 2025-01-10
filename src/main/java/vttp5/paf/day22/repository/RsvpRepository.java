@@ -2,6 +2,7 @@ package vttp5.paf.day22.repository;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,5 +32,37 @@ public class RsvpRepository {
         
         return allRsvp;
     }
-    
+
+    public Optional<Rsvp> getRsvpByEmail(String email)
+    {
+        String formattedEmail = "%" + email + "%";
+
+        SqlRowSet rs = template.queryForRowSet(Queries.Q_EMAIL_RSVP, formattedEmail);
+
+        if(!rs.next())
+        {
+            return Optional.empty();
+        }
+
+        Rsvp rsvp = Util.toRsvp(rs);
+
+        return Optional.of(rsvp);
+    }
+
+    public List<Rsvp> getMatchingRsvpByEmail(String email)
+    {
+        String formattedEmail = "%" + email + "%";
+        List<Rsvp> matchingRsvps = new LinkedList<>();
+
+        SqlRowSet rs = template.queryForRowSet(Queries.Q_EMAIL_RSVP, formattedEmail);
+
+        while(rs.next())
+        {
+            Rsvp rsvp = Util.toRsvp(rs);
+            matchingRsvps.add(rsvp);
+        }
+
+        return matchingRsvps;
+    }
+
 }
