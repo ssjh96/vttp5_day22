@@ -27,7 +27,7 @@ public class Util {
         JsonObjectBuilder job = Json.createObjectBuilder()
             .add("email", rsvp.getEmail())
             .add("phone", rsvp.getPhone())
-            .add("confirmationDate", rsvp.getConfirmationDate().toString())
+            .add("confirmation_date", rsvp.getConfirmationDate().toString())
             .add("comments", rsvp.getComments());
 
             return job.build();

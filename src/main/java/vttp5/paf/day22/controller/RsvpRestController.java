@@ -1,18 +1,14 @@
 package vttp5.paf.day22.controller;
 
-import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
 import vttp5.paf.day22.model.Rsvp;
 import vttp5.paf.day22.service.RsvpService;
 import vttp5.paf.day22.util.Util;
@@ -29,6 +24,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 
@@ -79,6 +77,9 @@ public class RsvpRestController {
 
     }
 
+
+
+
     // Query for 1 specific email 
     @GetMapping(path = "/email", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getRsvpByEmail(@RequestParam ("q") String email) 
@@ -106,6 +107,9 @@ public class RsvpRestController {
                                 .body(jRsvp.toString());
         
     }
+
+
+
 
     @GetMapping(path = "/rsvp", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getMatchingRsvpByEmail(@RequestParam ("q") String email) {
@@ -167,30 +171,6 @@ public class RsvpRestController {
     // Clieant sends request > /api/rsvp > Header CT: a/j, A: a/j, Body: JSON obj w RSVP details
     // Server process request > parse JSON body, adds RSVP to DB, sends a response > Header: CT: a/j, Body: confirmation message
 
-    // @PostMapping(path = "/rsvp", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    // public ResponseEntity<String> addNewRsvp(@RequestBody String formEntry)
-    // {
-
-    //     JsonReader jsonReader = Json.createReader(new StringReader(formEntry));
-    //     JsonObject rsvpJson = jsonReader.readObject();
-
-    //     Rsvp rsvp = new Rsvp(rsvpJson.getString("email"), rsvpJson.getString("phone"), rsvpJson.getString(formEntry)
-
-    //     try {
-            
-    //         rsvpService.saveRsvp(rsvpJson);
-
-    //         return ResponseEntity.status(201).body(null);
-
-    //     } catch (Exception e){
-
-    //         System.out.println(e.getCause());
-    //         e.printStackTrace();
-
-    //         return ResponseEntity.status(500).body(null);
-    //     }
-        
-    // }
 
     
     
@@ -260,7 +240,7 @@ public class RsvpRestController {
         // .get() returns a list of values: .get(email) > ["x@email.com", "y@email.com"]
         String email = formData.getFirst("email"); // return first value
         String phone = formData.getFirst("phone");
-        String cfm_date_str = formData.getFirst("cfm_date_str");
+        String cfm_date_str = formData.getFirst("confirmation_date");
         String comments = formData.getFirst("comments");
 
         Date cfm_date;
@@ -290,7 +270,7 @@ public class RsvpRestController {
                                 .add("errorMsg", "Unable to save/update RSVP.")
                                 .add("email", email)
                                 .add("phone", phone)
-                                .add("cfm_date", cfm_date_str)
+                                .add("confirmation_date", cfm_date_str)
                                 .add("comments", comments)
                                 .build();
             
@@ -303,7 +283,83 @@ public class RsvpRestController {
                                 .add("successMsg", "Successfully saved/updated RSVP.")
                                 .add("email", email)
                                 .add("phone", phone)
-                                .add("cfm_date", cfm_date_str)
+                                .add("confirmation_date", cfm_date_str)
+                                .add("comments", comments)
+                                .build();
+
+        return ResponseEntity.status(201)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(jResponse.toString());
+    } 
+
+
+    // If client sends form data (application/x-www-form-urlencoded) use MultiValueMap<String, String>
+    // If client sends raw JSON (application/json) use String data and then parse the JSON.
+    @PutMapping(path = "/rsvp/{email}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
+    public ResponseEntity<String> updateExistingRsvp(@PathVariable ("email") String email, @RequestParam MultiValueMap<String, String> formData) 
+    {
+        // Extract Data
+        String phone = formData.getFirst("phone");
+        String cfm_date_str = formData.getFirst("confirmation_date");
+        String comments = formData.getFirst("comments");
+
+        // Convert cfm_date_str to Date object
+        Date cfm_date;
+        try
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sdf.setLenient(false); // Makes it match the pattern strictly
+            cfm_date = sdf.parse(cfm_date_str);
+        }
+        catch (ParseException e)
+        {
+            JsonObject jResponse = Json.createObjectBuilder()
+                                .add("errorMsg", "Unable to parse date: " + cfm_date_str.toString())
+                                .build();
+            
+            return ResponseEntity.status(400) // 400 bad request
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(jResponse.toString());
+        }
+
+        // Check if RSVP exist by email
+        Optional<Rsvp> optRsvp = rsvpService.getRsvpByEmail(email);
+
+        if (optRsvp.isEmpty())
+        {
+            JsonObject jResponse = Json.createObjectBuilder()
+                                .add("errorMsg", "RSVP not found for: " + email)
+                                .build();
+            
+            return ResponseEntity.status(404)
+                                //.contentType(MediaType.APPLICATION_JSON)
+                                .body(jResponse.toString());
+        }
+
+        // Create updated RSVP Object
+        Rsvp updatedRsvp = new Rsvp(email, phone, cfm_date, comments);
+
+        // Save updated RSVP
+        if (!rsvpService.saveRsvp(updatedRsvp))
+        {
+            JsonObject jResponse = Json.createObjectBuilder()
+                                .add("errorMsg", "Unable to save/update RSVP.")
+                                .add("email", email)
+                                .add("phone", phone)
+                                .add("confirmation_date", cfm_date_str)
+                                .add("comments", comments)
+                                .build();
+            
+            return ResponseEntity.status(500) // 500 internal server error
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(jResponse.toString());
+        }
+
+        JsonObject jResponse = Json.createObjectBuilder()
+                                .add("successMsg", "Successfully saved/updated RSVP.")
+                                .add("email", email)
+                                .add("phone", phone)
+                                .add("confirmation_date", cfm_date_str)
                                 .add("comments", comments)
                                 .build();
 
