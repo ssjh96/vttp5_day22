@@ -33,11 +33,11 @@ public class RsvpRepository {
         return allRsvp;
     }
 
-    public Optional<Rsvp> getRsvpByEmail(String email)
+    public Optional<Rsvp> getRsvpByEmail(String email) // optional is used for a 0 or 1 result, like finding an RSVP by email where email is unique
     {
         String formattedEmail = "%" + email + "%";
 
-        SqlRowSet rs = template.queryForRowSet(Queries.Q_EMAIL_RSVP, formattedEmail);
+        SqlRowSet rs = template.queryForRowSet(Queries.Q_EMAIL_RSVP, formattedEmail); // in this case should not use like, should use "SELECT * FROM rsvp_table WHERE email = ?"
 
         if(!rs.next())
         {
