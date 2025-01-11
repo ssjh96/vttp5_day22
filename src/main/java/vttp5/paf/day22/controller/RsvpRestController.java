@@ -178,7 +178,7 @@ public class RsvpRestController {
     @PostMapping(path = "/rsvp", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addOrUpdateRsvp(@RequestParam ("email") String email,
                                                 @RequestParam("phone") String phone,
-                                                @RequestParam("cfm_date_str") String cfm_date_str,
+                                                @RequestParam("confirmation_date") String cfm_date_str,
                                                 @RequestParam("comments")String comments) 
     {
         Date cfm_date;
@@ -210,7 +210,7 @@ public class RsvpRestController {
                                 .add("errorMsg", "Unable to save/update RSVP.")
                                 .add("email", email)
                                 .add("phone", phone)
-                                .add("cfm_date", cfm_date_str)
+                                .add("confirmation_date", cfm_date_str)
                                 .add("comments", comments)
                                 .build();
             
@@ -223,7 +223,7 @@ public class RsvpRestController {
                                 .add("successMsg", "Successfully save/update RSVP.")
                                 .add("email", email)
                                 .add("phone", phone)
-                                .add("cfm_date", cfm_date_str)
+                                .add("confirmation_date", cfm_date_str)
                                 .add("comments", comments)
                                 .build();
 
@@ -370,15 +370,15 @@ public class RsvpRestController {
 
 
     // Get number of RSVPs = get the number of people who have RSVPs
-    @GetMapping("/rsvps/{count}")
+    @GetMapping("/rsvps/count")
     public ResponseEntity<String> getRsvpCount() {
 
-        Optional<Integer> optCount = rsvpSe
+        Optional<Integer> optCount = rsvpService.countRsvp();
 
-        if (optRsvp.isEmpty())
+        if (optCount.isEmpty())
         {
             JsonObject jResponse = Json.createObjectBuilder()
-                                .add("errorMsg", "RSVP not found for: " + email)
+                                .add("errorMsg", "No RSVP found in the table.")
                                 .build();
             
             return ResponseEntity.status(404)
@@ -386,12 +386,15 @@ public class RsvpRestController {
                                 .body(jResponse.toString());
         }
 
-        Rsvp rsvp = optRsvp.get();
-        JsonObject jRsvp = Util.toJsonRsvp(rsvp);
-
-        return ResponseEntity.status(200) // 200 is also ok()
+        int count = optCount.get();
+        
+        JsonObject jResponse = Json.createObjectBuilder()
+                                .add("successMsg", "No. of RSVP in table: " + count)
+                                .build();
+            
+        return ResponseEntity.status(201)
                                 //.contentType(MediaType.APPLICATION_JSON)
-                                .body(jRsvp.toString());
+                                .body(jResponse.toString());
     }
     
 
