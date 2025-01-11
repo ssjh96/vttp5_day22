@@ -76,4 +76,11 @@ public class RsvpService {
     
         return false;
     }
+
+    public Optional<Integer> countRsvp()
+    {
+        Optional<Integer> optCount = rsvpRepo.countRsvp();
+
+        return optCount;
+    }
 }

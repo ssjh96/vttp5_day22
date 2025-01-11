@@ -1,5 +1,6 @@
 package vttp5.paf.day22.repository;
 
+import java.lang.classfile.ClassFile.Option;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +71,21 @@ public class RsvpRepository {
         int rowsAffected = template.update(Queries.Q_SAVE_RSVP, rsvp.getEmail(), rsvp.getPhone(), rsvp.getConfirmationDate(), rsvp.getComments());
 
         return rowsAffected;
+    }
+
+    public Optional<Integer> countRsvp()
+    {
+        SqlRowSet rs = template.queryForRowSet(Queries.Q_COUNT_RSVP);
+
+        if(!rs.next())
+        {
+            return Optional.empty();
+        }
+
+        String countString = rs.getString("count");
+        Integer count = Integer.parseInt(countString);
         
+        return Optional.of(count);
     }
 
 }

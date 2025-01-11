@@ -369,4 +369,31 @@ public class RsvpRestController {
     } 
 
 
+    // Get number of RSVPs = get the number of people who have RSVPs
+    @GetMapping("/rsvps/{count}")
+    public ResponseEntity<String> getRsvpCount() {
+
+        Optional<Integer> optCount = rsvpSe
+
+        if (optRsvp.isEmpty())
+        {
+            JsonObject jResponse = Json.createObjectBuilder()
+                                .add("errorMsg", "RSVP not found for: " + email)
+                                .build();
+            
+            return ResponseEntity.status(404)
+                                //.contentType(MediaType.APPLICATION_JSON)
+                                .body(jResponse.toString());
+        }
+
+        Rsvp rsvp = optRsvp.get();
+        JsonObject jRsvp = Util.toJsonRsvp(rsvp);
+
+        return ResponseEntity.status(200) // 200 is also ok()
+                                //.contentType(MediaType.APPLICATION_JSON)
+                                .body(jRsvp.toString());
+    }
+    
+
+
 }

@@ -39,4 +39,9 @@ public class Queries
         // INSERT INTO rsvp_table (email, phone, cfm_date, comments)
         // VALUES ('john.doe@example.com', '98765432', '2024-06-01', 'Looking forward to the event!')
         // ON DUPLICATE KEY UPDATE comments = IF(comments IS NULL, 'New comment', comments);
+
+        public static final String Q_COUNT_RSVP = 
+        """
+            select count(*) as count from rsvp_table;
+        """;
 }
